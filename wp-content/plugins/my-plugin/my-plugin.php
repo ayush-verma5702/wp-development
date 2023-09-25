@@ -22,15 +22,11 @@
    $wpdb->query($q);
 
    //$q= "INSERT INTO `$wp_emp` (`name`, `email`, `status`) VALUES ('Ayush', 'ayus@xyz.com', 1);";
-
-   $data = array(
-    'name' => 'Ayush',
-    'email' => 'ayush@xyz.com',
-    'status' => 1
-   );
-
-   $wpdb->insert($wp_emp, $data);
-
+   $wpdb->insert($wp_emp, array(
+         'name' => 'Ayush',
+         'email' => 'ayush@xyz.com',
+        'status' => 1,
+        ));
  }
 
  
@@ -47,8 +43,72 @@
 
  register_deactivation_hook(__FILE__, 'my_plugin_deactivation');
 
- function my_sc_fun(){
+//  function my_sc_fun(){
 
-    include 'sc_ex.php';
- }
- add_shortcode('my-sc','my_sc_fun');
+//     include 'sc_ex.php';
+//  }
+//  add_shortcode('my-sc','my_sc_fun');
+
+function new_sc(){
+    global $wpdb, $table_prefix;
+    $wp_emp = $table_prefix.'emp';
+
+    $q = "SELECT * FROM `$wp_emp`;";
+    $results = $wpdb->get_results($q);
+
+    ob_start()
+    ?>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach($results as $row):
+            ?>
+            <tr>
+                <td><?php echo $row->ID;?></td>
+                <td><?php echo $row->name;?></td>
+                <td><?php echo $row->email;?></td>
+                <td><?php echo $row->status;?></td>
+            </tr>
+            <?php
+            endforeach;
+            ?>
+        </tbody>
+    </table>
+    <?php
+}
+add_shortcode('my-sc', 'new_sc');
+
+function my_posts(){
+    $args = array(
+        'post_type' => 'post'
+    );
+    $query = new WP_Query($args);
+
+    ob_start();
+    if($query->have_posts()):
+    ?>
+    <ul>
+        <?php
+        while($query->have_posts()){
+            $query->the_post();
+            echo '<li>'.get_the_title().' -> '.get_the_content().'</li>';
+        }
+        ?>
+        <li></li>
+    </ul>
+    <?php
+    endif;
+    wp_reset_postdata();
+    $html = ob_get_clean();
+    return $html;
+}
+
+add_shortcode('my_posts','my_posts');
