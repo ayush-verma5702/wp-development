@@ -83,6 +83,8 @@ function new_sc(){
         </tbody>
     </table>
     <?php
+    $html = ob_get_clean();
+    return $html;
 }
 add_shortcode('my-sc', 'new_sc');
 
