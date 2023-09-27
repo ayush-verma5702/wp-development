@@ -22,12 +22,25 @@
    $wpdb->query($q);
 
    //$q= "INSERT INTO `$wp_emp` (`name`, `email`, `status`) VALUES ('Ayush', 'ayus@xyz.com', 1);";
-   $wpdb->insert($wp_emp, array(
-         'name' => 'Ayush',
-         'email' => 'ayush@xyz.com',
-        'status' => 1,
-        ));
- }
+   $emp_details= array(
+    array(
+        'name' => 'Ayush',
+        'email' => 'ayush@xyz.com',
+       'status' => 1,
+    ),
+    array(
+        'name' => 'Shaurya',
+        'email' => 'shaurya@xyz.com',
+       'status' => 1,
+    ));
+    foreach($emp_details as $emp){
+     $result= $wpdb->insert($wp_emp, $emp);
+      if ( is_wp_error( $result ) ) { 
+        $error_string = $result->get_error_message(); 
+        echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
+     }
+    }
+}
 
  
  register_activation_hook(__FILE__, 'my_plugin_activation');
