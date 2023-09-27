@@ -135,3 +135,40 @@ function my_plugin_menu()
     'my-plugin-subpage', 'my_plugin_subpage_func');
 }
 add_action('admin_menu', 'my_plugin_menu');
+
+function new_cpt()
+{
+    $labels = array(
+        'name' => 'Cars',
+        'singular_name' => 'Car'
+    );
+    $supports = array('title', 'editor', 'thumbnail' , 'comments', 'excerpts');
+    $options = array(
+        'labels' => $labels,
+        'public' => true,
+        'has_archive' => true,
+        'rewrite' => array('slug'=>'cars'),
+        'show_in_rest' => true,
+        'supports' => $supports,
+        'taxonomies' => array('car_types')
+    );
+    register_post_type('cars',$options);
+}
+
+add_action('init','new_cpt');
+
+function register_car_types(){
+    $labels = array(
+        'name' => 'Car Types',
+        'singular_name' => 'Car Type'
+    );
+    $options = array(
+        'labels' => $labels,
+        'hierarchichal' => true,
+        'rewrite' => array('slug' => 'car-type'),
+        'show_in_rest' => true
+    );
+    register_taxonomy('car-type',array('cars'),$options);
+}
+
+add_action('init', 'register_car_types');
